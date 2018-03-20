@@ -94,7 +94,7 @@ public class Projecte {
                         if (esS == 'S') {
                             System.out.println("\nNom: " + nom);
                         }
-                        System.out.println("\nVols modificar la pel·lícula? (Si/No)");
+                        System.out.println("\nVols modificar el nom de la pel·lícula? (Si/No)");
                         do {
                             esS = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
                         } while (esS != 'S' && esS != 'N');
@@ -108,7 +108,7 @@ public class Projecte {
                             esS = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
                         } while (esS != 'S' && esS != 'N');
                         if (esS == 'S') {
-                            System.out.println("Nom: ");
+                            System.out.println("Pais: ");
                             nom = ent.skip("[\r\n]*").nextLine();
                         }
                         System.out.println("\nDirector: " + director);
@@ -121,6 +121,7 @@ public class Projecte {
                             director = ent.skip("[\r\n]*").nextInt();
                         }
                         System.out.println("\nNota: " + nota);
+                        //nota = Integer.toString(nota);
                         System.out.println("\nVols modificar la nota? (Si/No)");
                         do {
                             esS = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
@@ -161,7 +162,7 @@ public class Projecte {
                         esS = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
                     } while (esS != 'S' && esS != 'N');
                     if (esS == 'S') {
-                        omlpit = false;
+                        omplit = false;
                         System.out.println("\nDades borrades correctament");
                             }else{
                         System.out.println("\nNo s'han borrat les dades");

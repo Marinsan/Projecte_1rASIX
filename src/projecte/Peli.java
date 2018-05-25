@@ -10,12 +10,22 @@ package projecte;
  * @author marin
  */
 public class Peli {
-    
-        String nom = null, pais = null, director = null;
-        int menu, any = 0;
-        double nota = 0.0;
-        boolean estrena = false, omplit = false;
-        char estrenas = ' ', esS = ' ';
+
+    private String nom = null;
+
+    private String pais = null;
+
+    private String director = null;
+    private int menu;
+
+    private int any = 0;
+    private double nota = 0.0;
+    private boolean estrena;
+
+    private boolean omplit = false;
+    private char estrenas;
+
+    private char esS = ' ';
 
     public String getNom() {
         return nom;
@@ -96,7 +106,10 @@ public class Peli {
     public void setEsS(char esS) {
         this.esS = esS;
     }
-    
+
+    @Override
+    public String toString() {
+        return "Pelicula\nNom: "+nom+"\nDirector: "+director+"\nPais: "+pais+"\nAny: "+any+"\nNota: "+nota+"\nEstrena: "+estrena;
+    }
+
 }
-
-

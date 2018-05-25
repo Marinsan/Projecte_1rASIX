@@ -6,6 +6,15 @@
 package projecte;
 
 
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Scanner;
 
 /**
@@ -14,12 +23,15 @@ import java.util.Scanner;
  */
 public class ProjecteJava {
 
-    private static final int MAX_PELIS = 5;
+    private static final int MAX_PELIS = 50;
     
     private static Peli[] array = new Peli[MAX_PELIS];
     
     private static int opcio;
     
+    private static File dades=new File("pelis.db");
+    
+     
     public static void main(String[] args) {
                
             inicialitzarVariables();
@@ -29,18 +41,63 @@ public class ProjecteJava {
             }   while (!opcioFinal());
     }
 
-    public static void inicialitzarVariables() {
+      public static void inicialitzarVariables() {
         
-        for (int i = 0; i < array.length; i++) {
+        
+        int i=0;
+        
+       
+        if(dades.exists()){
+            
+            boolean finalitzar=false;
+            
+            
+            ObjectInputStream lectura=null;
+            try{
+                
+                lectura=new ObjectInputStream(new BufferedInputStream(new FileInputStream(dades)));
+                
+                while(true){
+                    array[i]=(Peli) lectura.readObject();
+                    
+                    i++;
+                }
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                
+                System.err.println("No pots introduir meés pelicules!! Vols continuar?(S/N):");
+                Scanner ent = new Scanner(System.in);
+                char siNo=' ';
+                do {                    
+                    siNo = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0); 
+                    
+                } while (siNo != 'S' && siNo != 'N');
+                if(siNo=='N') finalitzar=true;
+                
+            } catch (IOException ex) {
+                
+            } catch (ClassNotFoundException ex) {
+                
+            }finally{
+                try {
+                    if(lectura!=null) lectura.close();
+                } catch (IOException ex) {
+                    
+                }
+                if(finalitzar) System.exit(0);
+            }
+        
+        }
+
+        for (; i < array.length; i++) {
             array[i] = new Peli();
             array[i].setOmplit(false);
         }
-            
     }
     
     public static void demanarOpcio() {
         Scanner ent = new Scanner(System.in);
         
+        do {
             System.out.println("\nMenú de l'aplicació:");
             System.out.println("0. Sortir");
             System.out.println("1. Entrar pel·lícula");
@@ -48,79 +105,152 @@ public class ProjecteJava {
             System.out.println("3. Borrar pel·lícula");
             System.out.println("4. Llistar pel·lícula");
             System.out.println("5. Recuperar pel·lícula borrada");
-            opcio = ent.skip("[\r\n]*").nextInt();
-        
-    }
-
-    public static void tractarOpcio() {
-        
-        switch (opcio) {
-            
-            case 0:
-                System.out.println("Adéu!!");
+            try{
+                opcio = ent.nextInt();
                 break;
+            }catch(java.util.InputMismatchException e){
+                System.out.println("Opció incorrecta!!");
+                
+                ent.next();
+                
+            }
+        }while(true);
 
-            case 1:
+    }
+    
+
+     public static void tractarOpcio() {
+
+        switch (opcio) {
+            case 0:                            
+                sortir();
+                break;
+            case 1:                            
                 introduirPeli();
                 break;
-                
-            case 2:
+            case 2:                             
                 modificarPeli();
                 break;
-            
-            case 3:
+            case 3:                                     
                 borrarPeli();
                 break;
-            
-            case 4:
-                llistarPelis();
+            case 4:                                     
+                llistarPeli();
                 break;
-                
-            case 5:
+            case 5:                                    
                 recuperarPeli();
                 break;
-              
             default:
                 System.out.println("\nOpció incorrecta!!");
         }
+
     }
     
     public static boolean opcioFinal(){
         return opcio == 0;
     }
     
+    public static void sortir(){
+        
+        ObjectOutputStream escriptura=null;
+        try{
+            
+            escriptura=new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(dades)));
+    
+            for (Peli array1 : array) {
+                if (array1.isOmplit()) {
+                    escriptura.writeObject(array1);
+                }
+            }
+        } catch (IOException ex) {
+            System.err.println("Error en guardar les dades!!");
+        } finally{
+            try {
+                if(escriptura!=null) escriptura.close();
+            } catch (IOException ex) {
+             }
+
+        }
+     
+        System.out.println("Que vaigue be!!");
+
+    }
+    
+
     @SuppressWarnings("empty-statement")
     public static void introduirPeli(){
         Scanner ent = new Scanner(System.in);
         
         int i;
-        for (i = 0; i < array.length && array[i].isOmplit(); i++);    
+        for (i = 0; array[i].isOmplit() && i < array.length; i++);
         
         if (i < array.length) {
-                        
-                        System.out.println("\nNom: ");
-                        array[i].setNom(ent.skip("[\r\n]*").nextLine());
-                        System.out.println("Pais: ");
-                        array[i].setPais(ent.skip("[\r\n]*").nextLine());
-                        System.out.println("Director: ");
-                        array[i].setDirector(ent.skip("[\r\n]*").nextLine());
-                        System.out.println("Any: ");
-                        array[i].setAny(ent.skip("[\r\n]*").nextInt());
-                        System.out.println("Nota:");
-                        array[i].setNota(ent.skip("[\r\n]*").nextDouble());
-                        
-                        char estrenas;
-                        do {
-                            System.out.println("Estrena (Si/No): ");
-                            estrenas = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
-                        } while (estrenas != 'S' && estrenas != 'N');
-                        array[i].setEstrena(estrenas == 'S');
-                        array[i].setOmplit(true);
-                    } else {
-                        System.out.println("Ja has introduït dades, si vols omplir-lo esborra'l primer.");
-                    }
+            do{
+                try{ 
+                    System.out.println("\nNom:");
+                    array[i].setNom(ent.nextLine());
+                    break;
+                }catch(java.util.InputMismatchException e){
+                    System.out.println("Caracters incorrectes!!");
+                    ent.nextLine();
+                }
+            }while(true);
             
+            do{
+                try{ 
+                    System.out.println("\nPais:");
+                    array[i].setPais(ent.nextLine());
+                    break;
+                }catch(java.util.InputMismatchException a){
+                    System.out.println("Caracters incorrectes!!");
+                    ent.nextLine();
+                }
+            }while(true);
+            
+            do{
+                try{ 
+                    System.out.println("\nDirector:");
+                    array[i].setNom(ent.nextLine());
+                    break;
+                }catch(java.util.InputMismatchException e){
+                    System.out.println("Caracters incorrectes!!");
+                    ent.nextLine();
+                }
+            }while(true);
+       
+            do{
+                try{ 
+                    System.out.println("Any:");
+                    array[i].setAny(ent.nextInt());
+                    break;
+                }catch(java.util.InputMismatchException e){
+                    System.out.println("Any incorrecte!!");
+                    ent.next();
+                }
+            }while(true);
+            do{
+                try{
+                    System.out.println("Nota:");                
+                    array[i].setNota(ent.nextDouble());
+                    break;
+                }catch(java.util.InputMismatchException e){
+                    System.out.println("Nota incorrecta!!");
+                    ent.next();
+                }
+            }while(true);
+            char estrenas;
+            do {
+                System.out.println("És estrena o no?(S/N):");
+                estrenas = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0); 
+                
+            } while (estrenas != 'S' && estrenas != 'N');
+            array[i].setEstrena(estrenas == 'S');    
+            array[i].setOmplit(true);
+        } else {
+            System.out.println("\nNo hi caben més pelis, borra un registre de peli per introduir la nova.");
         }
+    }
+        
     public static void modificarPeli(){
         
         Scanner ent = new Scanner(System.in);
@@ -156,6 +286,55 @@ public class ProjecteJava {
                 array[i].setNom(ent.skip("[\r\n]*").nextLine());
             }
         }
+        
+        if (ns == 'S') {
+            System.out.println("\nPais: " + array[i].getPais());
+            do {
+                System.out.println("\nVols modificar el Pais? (S/N):");
+                ns = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
+            } while (ns != 'S' && ns != 'N');
+            if (ns == 'S') {
+                System.out.println("Introdueix el Pais: ");
+                array[i].setPais(ent.skip("[\r\n]*").nextLine());
+            }
+        }
+        
+        if (ns == 'S') {
+            System.out.println("\nDirector: " + array[i].getDirector());
+            do {
+                System.out.println("\nVols modificar el Director? (S/N):");
+                ns = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
+            } while (ns != 'S' && ns != 'N');
+            if (ns == 'S') {
+                System.out.println("Introdueix el Director: ");
+                array[i].setDirector(ent.skip("[\r\n]*").nextLine());
+            }
+        }
+        
+        if (ns == 'S') {
+            System.out.println("\nAny: " + array[i].getAny());
+            do {
+                System.out.println("\nVols modificar l'Any? (S/N):");
+                ns = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
+            } while (ns != 'S' && ns != 'N');
+            if (ns == 'S') {
+                System.out.println("Introdueix l'any: ");
+                array[i].setAny(ent.skip("[\r\n]*").nextInt());
+            }
+        }
+        
+        if (ns == 'S') {
+            System.out.println("\nNota: " + array[i].getNota());
+            do {
+                System.out.println("\nVols modificar la Nota? (S/N):");
+                ns = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
+            } while (ns != 'S' && ns != 'N');
+            if (ns == 'S') {
+                System.out.println("Introdueix la Nota: ");
+                array[i].setNota(ent.skip("[\r\n]*").nextInt());
+            }
+        }
+        
         
         if (array[i].isEstrena()) {
                 System.out.println("\nÉs estrena");
@@ -193,7 +372,7 @@ public class ProjecteJava {
             if (p.isOmplit()) {
                 System.out.println(p);
                 do {
-                    System.out.println("\nVols borrar la pel·licaula (Escriu S per si o N per No) o acabar la busqueda (Escriu A per acabar)?:");
+                    System.out.println("\nVols borrar la pel·licula (Escriu S per si o N per No) o acabar la busqueda (Escriu A per acabar)?:");
                     ns = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
                 } while (ns != 'S' && ns != 'N' && ns != 'A');
             }
@@ -211,7 +390,7 @@ public class ProjecteJava {
         
     }
     
-    public static void llistarPelis(){
+    public static void llistarPeli(){
         
         Scanner ent = new Scanner(System.in);
         
@@ -267,8 +446,13 @@ public class ProjecteJava {
             else System.out.println("Pel·lícula no recuperat.");
         }
     }
+
+    public static Peli[] getArray() {
+        throw new UnsupportedOperationException("Not supported yet."); 
+    }
     
     }
-
+    
+     
         
 

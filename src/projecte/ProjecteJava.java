@@ -32,7 +32,7 @@ public class ProjecteJava {
     private static File dades=new File("pelis.db");
     
      
-    public static void main(String[] args) {
+    public static void main(String[] args){
                
             inicialitzarVariables();
             do {
@@ -64,7 +64,7 @@ public class ProjecteJava {
                 }
             } catch (ArrayIndexOutOfBoundsException ex) {
                 
-                System.err.println("No pots introduir meés pelicules!! Vols continuar?(S/N):");
+                System.err.println("No pots introduir més pelicules!! Vols continuar?(S/N):");
                 Scanner ent = new Scanner(System.in);
                 char siNo=' ';
                 do {                    
@@ -185,43 +185,20 @@ public class ProjecteJava {
         for (i = 0; array[i].isOmplit() && i < array.length; i++);
         
         if (i < array.length) {
-            do{
-                try{ 
-                    System.out.println("\nNom:");
-                    array[i].setNom(ent.nextLine());
-                    break;
-                }catch(java.util.InputMismatchException e){
-                    System.out.println("Caracters incorrectes!!");
-                    ent.nextLine();
-                }
-            }while(true);
+            
+            System.out.println("\nNom:");
+            array[i].setNom(ent.skip("[\r\n]*").nextLine());
+            
+            System.out.println("\nPais:");
+            array[i].setPais(ent.skip("[\r\n]*").nextLine());
+            
+            System.out.println("\nDirector:");
+            array[i].setDirector(ent.skip("[\r\n]*").nextLine());
             
             do{
                 try{ 
-                    System.out.println("\nPais:");
-                    array[i].setPais(ent.nextLine());
-                    break;
-                }catch(java.util.InputMismatchException a){
-                    System.out.println("Caracters incorrectes!!");
-                    ent.nextLine();
-                }
-            }while(true);
-            
-            do{
-                try{ 
-                    System.out.println("\nDirector:");
-                    array[i].setNom(ent.nextLine());
-                    break;
-                }catch(java.util.InputMismatchException e){
-                    System.out.println("Caracters incorrectes!!");
-                    ent.nextLine();
-                }
-            }while(true);
-       
-            do{
-                try{ 
-                    System.out.println("Any:");
-                    array[i].setAny(ent.nextInt());
+                    System.out.println("\nAny:");
+                    array[i].setAny(ent.skip("[\r\n]*").nextInt());
                     break;
                 }catch(java.util.InputMismatchException e){
                     System.out.println("Any incorrecte!!");
@@ -230,8 +207,8 @@ public class ProjecteJava {
             }while(true);
             do{
                 try{
-                    System.out.println("Nota:");                
-                    array[i].setNota(ent.nextDouble());
+                    System.out.println("\nNota:");                
+                    array[i].setNota(ent.skip("[\r\n]*").nextDouble());
                     break;
                 }catch(java.util.InputMismatchException e){
                     System.out.println("Nota incorrecta!!");
@@ -240,7 +217,7 @@ public class ProjecteJava {
             }while(true);
             char estrenas;
             do {
-                System.out.println("És estrena o no?(S/N):");
+                System.out.println("\nÉs estrena o no?(S/N):");
                 estrenas = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0); 
                 
             } while (estrenas != 'S' && estrenas != 'N');
@@ -259,7 +236,7 @@ public class ProjecteJava {
         int cont = 1, i = 0;
         p = array[i];
         char ns = ' ';
-        
+              
         for (; i < array.length && ns != 'A'; i++) {
             if (array[i].isOmplit()) {
                 System.out.format("\nPel·lícula %d:\n", cont++);
@@ -334,31 +311,26 @@ public class ProjecteJava {
                 array[i].setNota(ent.skip("[\r\n]*").nextInt());
             }
         }
-        
-        
-        if (array[i].isEstrena()) {
-                System.out.println("\nÉs estrena");
-            } else {
-                System.out.println("\nNo és estrena");
-            }
-            do {
-                System.out.println("\nVols modificar si es estrena o no?(S/N):");
-                ns = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
-            } while (ns != 'S' && ns != 'N');
-            if (ns == 'S') {
+        if (ns == 'S') {
                 char esEstrena;
                 do {
-                    System.out.println("Es estrena?(S/N) ");
+                    System.out.println("És Estrena o no?(S/N):");
                     esEstrena = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
                 } while (esEstrena != 'S' && esEstrena != 'N');
-                if (esEstrena == 's') {
-                    p.setEstrena(true);
+                array[i].setEstrena(esEstrena == 'S');     
+                System.out.print("És estrena; ");
+                if (array[i].isEstrena()) {
+                    System.out.println("Si");
                 } else {
-                    p.setEstrena(false);
+                    System.out.println("No");
                 }
-        }
+            }
+
+            System.out.println("Peli modificada correctament.");
+
     }
     
+
     public static void borrarPeli(){
         
         Scanner ent = new Scanner(System.in);
@@ -394,14 +366,14 @@ public class ProjecteJava {
         
         Scanner ent = new Scanner(System.in);
         
-        boolean x = false;
+        boolean si = false;
         char ns = 'S';
         int i;
         
         for (i = 0; i < array.length; i++) {
             Peli p = array[i];
             if (p.isOmplit()) {
-                x = true;
+                si = true;
                 System.out.println(p);
                 do {
                     System.out.println("\nVols llistar més pel·lícules?(Escriu S per si o N per No):");
@@ -412,7 +384,7 @@ public class ProjecteJava {
                 break;
             }
         }
-        if (!x) {
+        if (!si) {
             System.out.println("\nNo hi ha pel·licules per mostrar");
         }         
         
@@ -421,31 +393,33 @@ public class ProjecteJava {
     public static void recuperarPeli(){
         
         Scanner ent = new Scanner(System.in);
-        
+       
         char ns = 'N';
         int cont = 0, i;
-        
         for (i = 0; i < array.length && ns != 'S' && ns != 'A'; i++) {
             if (!array[i].isOmplit()) {
-                System.out.format("\nPel·lícula %d:\n", ++cont);
+                System.out.format("\nPeli %d:\n", ++cont);
                 System.out.println(array[i].toString());
                 do {
                     System.out.println("\nVols recuperar la pel·lícula(Escriu S per si o N per No) o acabar la busqueda (Escriu A per acabar)?:");
-                    ns = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
-                } while (ns != 'S' && ns != 'N' && ns != 'A');
+                    ns = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0); 
+                } while (ns!= 'S' && ns != 'N' && ns != 'A');
             }
             if (ns == 'S') {
                 break;
             }
         }
+        
         if (ns == 'S') {
             array[i].setOmplit(true);
-            System.out.println("Pel·lícula recuperada correctament.");
+            System.out.println("Pelicula recuperada correctament.");
         } else {
-            if(cont==0) System.out.println("No hi ha cap pel·lícula a recuperar");
-            else System.out.println("Pel·lícula no recuperat.");
+            if(cont==0) System.out.println("No hi ha cap pel·lícula a recuperar.");
+            else System.out.println("Pelicula no recuperada.");
         }
+    
     }
+           
 
     public static Peli[] getArray() {
         throw new UnsupportedOperationException("Not supported yet."); 

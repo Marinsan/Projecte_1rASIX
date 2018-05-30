@@ -5,11 +5,13 @@
  */
 package projecte;
 
+import java.io.Serializable;
+
 /**
  *
  * @author marin
  */
-public class Peli {
+public class Peli implements Serializable  {
 
     private String nom = null;
 
